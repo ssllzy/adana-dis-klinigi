@@ -1,0 +1,12 @@
+{
+  "name": "Adana Diş",
+  "short_name": "Adana Diş",
+  "description": "Yüreğir, Adana'da Adana Diş.",
+  "lang": "tr-TR",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#101110",
+  "theme_color": "#101110",
+  "icons": [{"src":"/favicon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}]
+}
+

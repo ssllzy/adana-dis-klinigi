@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /yonetim
+Disallow: /admin.html
+Disallow: /api/
+
+Sitemap: https://adanayuregirdis.com/sitemap.xml

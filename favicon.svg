@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Adana Diş">
+  <rect width="64" height="64" rx="15" fill="#172219"/>
+  <path d="M19 17c4-4 9-3 13-1 4-2 9-3 13 1 5 5 3 13 0 20-3 8-5 13-9 13-3 0-2-10-4-10s-1 10-4 10c-4 0-6-5-9-13-3-7-5-15 0-20Z" fill="#ead5ad"/>
+  <path d="m48 11 1.5 4.5L54 17l-4.5 1.5L48 23l-1.5-4.5L42 17l4.5-1.5L48 11Z" fill="#fff7e7"/>
+</svg>
+

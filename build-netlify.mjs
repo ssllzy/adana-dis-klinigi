@@ -1,0 +1,27 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import {fileURLToPath} from 'node:url';
+const sourceRoot=path.dirname(fileURLToPath(import.meta.url));
+const output=path.join(sourceRoot,'netlify-site');
+if(path.dirname(output)!==sourceRoot)throw new Error('Invalid publication path');
+fs.rmSync(output,{recursive:true,force:true});
+fs.mkdirSync(output,{recursive:true});
+const files=['index.html','style.css','hero.css','clinic.css','script.js','hero.js','intro-bootstrap.js','favicon.svg','site.webmanifest','robots.txt','sitemap.xml','booking.js','admin.html','admin.css','admin.js','doctors.js','closures.js','patients.js','settings.js'];
+for(const f of files)fs.copyFileSync(path.join(sourceRoot,f),path.join(output,f));
+for(const f of ['assets/consultation-hero.webp','assets/clinic-atmosphere.webp','assets/og-share.jpg','vendor/motion.js','vendor/MOTION-LICENSE.md']){fs.mkdirSync(path.dirname(path.join(output,f)),{recursive:true});fs.copyFileSync(path.join(sourceRoot,f),path.join(output,f));}
+fs.copyFileSync(path.join(sourceRoot,'browser-demo-api.js'),path.join(output,'browser-demo-api.js'));
+const edit=(f,fn)=>fs.writeFileSync(path.join(output,f),fn(fs.readFileSync(path.join(output,f),'utf8')));
+for(const f of ['index.html','admin.html'])edit(f,s=>s.replace('<head>','<head><script src="browser-demo-api.js"></script>').replaceAll('Yerel demo','Tarayıcı demosu').replaceAll('YEREL DEMO','TARAYICI DEMOSU').replaceAll('bu bilgisayardaki veritabanına','bu tarayıcıya').replaceAll('bilgisayarınızdaki demo veritabanına','tarayıcınızdaki örnek kayıt alanına').replaceAll('yalnızca bu bilgisayara','yalnızca bu tarayıcıya'));
+edit('index.html',s=>s.replace('</footer>','<p style="text-align:center;padding:16px"><a href="/yonetim">Örnek yönetim panelini aç ↗</a> · Kayıtlar yalnızca bu tarayıcıda saklanır. Gerçek kişisel bilgi kullanmayın.</p></footer>').replace('Şimdi klinik onayı bekleniyor.','Talebiniz örnek panele kaydedildi.'));
+edit('admin.html',s=>s.replace('value="admin"','value="demo"').replace('YALNIZCA YETKİLİ PERSONEL İÇİN','PORTFÖY İÇİN ÖRNEK YÖNETİM PANELİ').replace(/<p class="login-note">[\s\S]*?<\/p>/,'<p class="login-note">Demo giriş: kullanıcı adı <strong>demo</strong>, parola <strong>demo</strong>. Kayıtlar yalnızca bu tarayıcıda saklanır. Gerçek hasta bilgisi girmeyin; bildirim veya ödeme işlemi yapılmaz.</p>'));
+edit('script.js',s=>s.replace("if(['localhost','127.0.0.1'].includes(location.hostname))","if(window.ClinicBrowserDemo||['localhost','127.0.0.1'].includes(location.hostname))"));
+edit('patients.js',s=>s.replace("treatmentForm=$('#treatmentForm');","treatmentForm=$('#treatmentForm'),paymentDialog=$('#paymentDialog'),paymentForm=$('#paymentForm');"));
+edit('booking.js',s=>s.replace('Yerel randevu servisine ulaşılamadı. Siteyi 127.0.0.1:4180 adresinden açın.','Tarayıcıdaki örnek randevu sistemi açılamadı. Depolama iznini kontrol edin.'));
+edit('admin.js',s=>s.replace('Yerel servise ulaşılamadı. Servisin çalıştığından emin olun.','Tarayıcıdaki örnek panel açılamadı. Depolama iznini kontrol edin.'));
+const html=fs.readFileSync(path.join(output,'index.html'),'utf8'),json=html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1];
+const hash=crypto.createHash('sha256').update(json||'').digest('base64');
+fs.writeFileSync(path.join(output,'_redirects'),'/yonetim /admin.html 200\n/api/* /404.html 404\n');
+fs.writeFileSync(path.join(output,'404.html'),'<!doctype html><html lang="tr"><meta charset="utf-8"><title>Sayfa bulunamadı</title><p>Sayfa bulunamadı. <a href="/">Ana sayfa</a></p></html>');
+fs.writeFileSync(path.join(output,'_headers'),`/*\n  X-Content-Type-Options: nosniff\n  X-Frame-Options: DENY\n  Referrer-Policy: strict-origin-when-cross-origin\n  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()\n  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'none'; script-src 'self' 'sha256-${hash}'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';\n`);
+console.log('Package prepared:',output);

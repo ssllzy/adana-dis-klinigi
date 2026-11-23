@@ -1,0 +1,9 @@
+{
+  "name": "adana-dis-klinigi",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "build": "node build-netlify.mjs",
+    "check": "node --test hero.test.cjs"
+  }
+}
